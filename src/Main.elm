@@ -8,10 +8,10 @@ import Browser
 import Html.Styled exposing (..)
 import Html.Styled.Events exposing (onClick, onInput)
 import Html.Styled.Attributes exposing (..)
-import Color exposing (Color)
 import Array2D exposing (Array2D)
 import Css
-import Css exposing (Style)
+import Css exposing (Style, Color)
+import Hex
 
 
 main =
@@ -21,7 +21,8 @@ main =
 -- MODEL
 
 type alias Model =
-    { colors : Array2D Color
+    -- { colors : Array2D Color
+    { color : Color
     , dimensions : Dimensions
     }
 
@@ -34,7 +35,8 @@ type alias Dimension = Float
 
 init : Model
 init =
-    { colors = Array2D.empty
+    -- { colors = Array2D.empty
+    { color = Css.hex "60c71c"
     , dimensions = initDimensions
     }
 
@@ -52,7 +54,7 @@ type Msg
     | Height Dimension
     | IncrementWidth
     | IncrementHeight
-    -- | Color ...
+    | NewColor Color
 
 update : Msg -> Model -> Model
 update msg model =
@@ -76,19 +78,25 @@ update msg model =
         model.dimensions.height + 1
             |> asHeightIn model.dimensions
             |> asDimensionsIn model
-    -- Color ... ->
+
+    NewColor color ->
+        color
+            |> asColorIn model
 
 
 -- VIEW
 
 view : Model -> Html Msg
 view model =
-  div [] [ tile model, increaseWidthButton model ]
+  div [] [ tile model
+         , increaseWidthButton model
+         , selectColorButton model
+         ]
 
 tile : Model -> Html Msg
 tile model =
     div [ css [ tileDimensions model.dimensions
-              , tileColor
+              , tileColor model.color
               ]
         ]
         []
@@ -99,15 +107,26 @@ tileDimensions dimensions =
               , Css.height (Css.px dimensions.height)
               ]
 
-tileColor : Style
-tileColor =
-    Css.backgroundColor (Css.hex "60c71c")
+tileColor : Color -> Style
+tileColor color =
+    Css.backgroundColor color
 
 
 increaseWidthButton : Model -> Html Msg
 increaseWidthButton model =
     button [ onClick IncrementWidth ] [ text "Increase Width" ]
 
+selectColorButton : Model -> Html Msg
+selectColorButton model =
+    input [ type_ "color"
+          , value (fromColor model.color)
+          , onInput colorMsg
+          ]
+        []
+
+colorMsg : String -> Msg
+colorMsg string =
+    NewColor (Css.hex string)
 
 
 -- HELPERS
@@ -136,6 +155,27 @@ asDimensionsIn : Model -> Dimensions -> Model
 asDimensionsIn =
     flip setDimensions
 
+setColor : Color -> Model -> Model
+setColor color model =
+    { model | color = color }
+
+asColorIn : Model -> Color -> Model
+asColorIn =
+    flip setColor
+
 flip : (a -> b -> c) -> b -> a -> c
 flip f a b =
     f b a
+
+fromColor : Color -> String
+fromColor color =
+    let numbers =
+            [ color.red
+            , color.green
+            , color.blue
+            ]
+    in "#" ++ String.concat (List.map hexStr numbers)
+
+hexStr : Int -> String
+hexStr number =
+    String.pad 2 '0' (Hex.toString number)
