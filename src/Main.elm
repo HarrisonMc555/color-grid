@@ -64,13 +64,25 @@ initTileSize =
 
 type Msg
     = NewColor Color
+    | AddRow
+    | AddColumn
 
 update : Msg -> Model -> Model
 update msg model =
   case msg of
-    NewColor color ->
-        color
-            |> asColorIn model
+      NewColor color ->
+          color
+              |> asColorIn model
+
+      AddRow ->
+          model.gridDimensions.numRows
+              |> asNumRowsIn model.gridDimensions
+              |> asGridDimensionsIn model
+
+      AddColumn ->
+          model.gridDimensions.numColumns
+              |> asNumColumnsIn model.gridDimensions
+              |> asGridDimensionsIn model
 
 
 -- VIEW
@@ -146,6 +158,30 @@ setColor color model =
 asColorIn : Model -> Color -> Model
 asColorIn =
     flip setColor
+
+setNumRows : Int -> Dimensions -> Dimensions
+setNumRows numRows dimensions
+    = { dimensions | numRows = numRows }
+
+asNumRowsIn : Dimensions -> Int -> Dimensions
+asNumRowsIn =
+    flip setNumRows
+
+setNumColumns : Int -> Dimensions -> Dimensions
+setNumColumns numColumns dimensions
+    = { dimensions | numColumns = numColumns }
+
+asNumColumnsIn : Dimensions -> Int -> Dimensions
+asNumColumnsIn =
+    flip setNumColumns
+
+setGridDimensions : Dimensions -> Model -> Model
+setGridDimensions dimensions model =
+    { model | gridDimensions = dimensions }
+
+asGridDimensionsIn : Model -> Dimensions -> Model
+asGridDimensionsIn =
+    flip setGridDimensions
 
 flip : (a -> b -> c) -> b -> a -> c
 flip f a b =
