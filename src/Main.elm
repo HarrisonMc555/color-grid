@@ -73,21 +73,21 @@ update msg model =
 view : Model -> Html Msg
 view model =
   div []
-    [ div [ css [ blockDimensions model.dimensions
-                , blockColor
+    [ div [ css [ tileDimensions model.dimensions
+                , tileColor
                 ]
           ]
           []
     ]
 
-blockDimensions : Dimensions -> Style
-blockDimensions dimensions =
+tileDimensions : Dimensions -> Style
+tileDimensions dimensions =
     Css.batch [ Css.width (Css.px dimensions.width)
               , Css.height (Css.px dimensions.height)
               ]
 
-blockColor : Style
-blockColor =
+tileColor : Style
+tileColor =
     Css.backgroundColor (Css.hex "60c71c")
 
 
