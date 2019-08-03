@@ -95,6 +95,8 @@ view model =
            , columnText model
            , addColumnButton
            , grid model
+           , cssLink "normalize.css"
+           , cssLink "skeleton.css"
            ]
 
 grid : Model -> Html Msg
@@ -159,6 +161,9 @@ addColumnButton : Html Msg
 addColumnButton =
     button [ onClick AddColumn ] [ text "Add column" ]
 
+cssLink : String -> Html Msg
+cssLink filename =
+    node "link" [ rel "stylesheet", href ("../static/css/" ++ filename) ] []
 
 -- HELPERS
 
