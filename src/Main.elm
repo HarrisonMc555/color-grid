@@ -11,6 +11,7 @@ import Html.Styled.Attributes exposing (css)
 import Color exposing (Color)
 import Array2D exposing (Array2D)
 import Css
+import Css exposing (Style)
 
 
 main =
@@ -57,12 +58,15 @@ view model =
     , button [ onClick Increment ] [ text "+" ]
     , br [] []
     , button [ onClick Reset ] [ text "reset" ]
-    , div [ divCss ] []
+    , div [ css [ blockDimensions, blockColor ] ] []
     ]
 
-divCss : Html.Styled.Attribute msg
-divCss =
-    css [ Css.backgroundColor (Css.hex "60c71c")
-        , Css.width (Css.px 100)
-        , Css.height (Css.px 100)
-        ]
+blockDimensions : Style
+blockDimensions =
+    Css.batch [ Css.width (Css.px 100)
+              , Css.height (Css.px 100)
+              ]
+
+blockColor : Style
+blockColor =
+    Css.backgroundColor (Css.hex "60c71c")
