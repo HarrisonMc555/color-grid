@@ -8,16 +8,19 @@
     <meta name="description" content="Color Grid">
     <meta name="author" content="Harrison McCullough">
 
-    <!-- <link rel="stylesheet" href="css/styles.css"> -->
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/skeleton.css">
+
     <style>
      div.grid {
-       display: inline-grid;
+       display: grid;
        grid-template-columns: auto auto;
      }
 
-     div.tile {
-       width: 100px;
-       height: 100px;
+     div.tile:before {
+       content: "";
+       display: block;
+       padding-bottom: 130%;
      }
     </style>
 
@@ -26,14 +29,20 @@
   <body>
     <h1>Color Grid</h1>
 
-    <div class="grid">
-      <div class="tile" style="background-color: #777777;"></div>
-      <div class="tile" style="background-color: #0000ff;"></div>
-      <!-- <br> -->
-      <div class="tile" style="background-color: #00ff00;"></div>
-      <div class="tile" style="background-color: #ff0000;"></div>
+    <div class="container">
+
+      <div class="row">
+        <div class="grid three columns offset-by-two columns">
+          <div class="tile" style="background-color: #777777;"></div>
+          <div class="tile" style="background-color: #0000ff;"></div>
+          <div class="tile" style="background-color: #00ff00;"></div>
+          <div class="tile" style="background-color: #ff0000;"></div>
+        </div>
+
+        <input class="one column offset-by-one column" type="color" value="#e66465">
+
+      </div>
     </div>
-    <input type="color" value="#e66465">
 
   </body>
 </html>
