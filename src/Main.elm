@@ -94,11 +94,11 @@ view model =
            , addRowButton
            , columnText model
            , addColumnButton
-           ] ++ tiles model
+           ] ++ grid model
          )
 
-tiles : Model -> List (Html Msg)
-tiles model =
+grid : Model -> List (Html Msg)
+grid model =
     let tile = div [ css [ tileSize model.tileSize
                          , tileColor model.color
                          ]
