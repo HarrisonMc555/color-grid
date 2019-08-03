@@ -92,6 +92,8 @@ view model =
   div [] ( [ selectColorButton model
            , rowText model
            , addRowButton
+           , columnText model
+           , addColumnButton
            ] ++ tiles model
          )
 
@@ -137,6 +139,14 @@ rowText model =
 addRowButton : Html Msg
 addRowButton =
     button [ onClick AddRow ] [ text "Add row" ]
+
+columnText : Model -> Html Msg
+columnText model =
+    text (String.fromInt model.gridDimensions.numColumns)
+
+addColumnButton : Html Msg
+addColumnButton =
+    button [ onClick AddColumn ] [ text "Add column" ]
 
 
 
