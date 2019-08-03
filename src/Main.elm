@@ -20,32 +20,52 @@ main =
 
 -- MODEL
 
-type alias Model = Int
-type alias ColorModel =
-    {
-        colors : Array2D Color
+type alias Model =
+    { colors : Array2D Color
+    , dimensions : Dimensions
     }
+
+type alias Dimensions =
+    { width : Dimension
+    , height : Dimension
+    }
+
+type alias Dimension = Float
 
 init : Model
 init =
-  0
+    { colors = Array2D.empty
+    , dimensions = initDimensions
+    }
+
+initDimensions : Dimensions
+initDimensions =
+    { width = 100
+    , height = 100
+    }
 
 
 -- UPDATE
 
-type Msg = Increment | Decrement | Reset
+type Msg
+    = Width Dimension
+    | Height Dimension
+    -- | Color ...
 
 update : Msg -> Model -> Model
 update msg model =
   case msg of
-    Increment ->
-      model + 1
+    Width width ->
+        width
+            |> asWidthIn model.dimensions
+            |> asDimensionsIn model
 
-    Decrement ->
-      model - 1
+    Height height ->
+        height
+            |> asHeightIn model.dimensions
+            |> asDimensionsIn model
 
-    Reset ->
-      0
+    -- Color ... ->
 
 
 -- VIEW
@@ -53,20 +73,50 @@ update msg model =
 view : Model -> Html Msg
 view model =
   div []
-    [ button [ onClick Decrement ] [ text "-" ]
-    , div [] [ text (String.fromInt model) ]
-    , button [ onClick Increment ] [ text "+" ]
-    , br [] []
-    , button [ onClick Reset ] [ text "reset" ]
-    , div [ css [ blockDimensions, blockColor ] ] []
+    [ div [ css [ blockDimensions model.dimensions
+                , blockColor
+                ]
+          ]
+          []
     ]
 
-blockDimensions : Style
-blockDimensions =
-    Css.batch [ Css.width (Css.px 100)
-              , Css.height (Css.px 100)
+blockDimensions : Dimensions -> Style
+blockDimensions dimensions =
+    Css.batch [ Css.width (Css.px dimensions.width)
+              , Css.height (Css.px dimensions.height)
               ]
 
 blockColor : Style
 blockColor =
     Css.backgroundColor (Css.hex "60c71c")
+
+
+-- HELPERS
+
+setWidth : Dimension -> Dimensions -> Dimensions
+setWidth width dimension =
+    { dimension | width = width }
+
+setHeight : Dimension -> Dimensions -> Dimensions
+setHeight height dimension =
+    { dimension | height = height }
+
+asWidthIn : Dimensions -> Dimension -> Dimensions
+asWidthIn =
+    flip setWidth
+
+asHeightIn : Dimensions -> Dimension -> Dimensions
+asHeightIn =
+    flip setHeight
+
+setDimensions : Dimensions -> Model -> Model
+setDimensions dimensions model =
+    { model | dimensions = dimensions }
+
+asDimensionsIn : Model -> Dimensions -> Model
+asDimensionsIn =
+    flip setDimensions
+
+flip : (a -> b -> c) -> b -> a -> c
+flip f a b =
+    f b a
