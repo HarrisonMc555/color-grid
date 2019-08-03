@@ -89,19 +89,23 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-  div [] [ tile model
-         , selectColorButton model
-         , rowText model
-         , addRowButton
-         ]
+  div [] ( [ selectColorButton model
+           , rowText model
+           , addRowButton
+           ] ++ tiles model
+         )
 
-tile : Model -> Html Msg
-tile model =
-    div [ css [ tileSize model.tileSize
-              , tileColor model.color
-              ]
-        ]
-        []
+tiles : Model -> List (Html Msg)
+tiles model =
+    let tile = div [ css [ tileSize model.tileSize
+                         , tileColor model.color
+                         ]
+                   ]
+               []
+        numTiles = model.gridDimensions.numRows *
+                   model.gridDimensions.numColumns
+    in List.repeat numTiles tile
+
 
 tileSize : Size -> Style
 tileSize size =
