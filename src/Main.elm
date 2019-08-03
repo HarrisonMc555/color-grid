@@ -5,9 +5,9 @@
 --
 
 import Browser
-import Html.Styled exposing (Html, button, div, text, br, toUnstyled)
-import Html.Styled.Events exposing (onClick)
-import Html.Styled.Attributes exposing (css)
+import Html.Styled exposing (..)
+import Html.Styled.Events exposing (onClick, onInput)
+import Html.Styled.Attributes exposing (..)
 import Color exposing (Color)
 import Array2D exposing (Array2D)
 import Css
@@ -50,6 +50,8 @@ initDimensions =
 type Msg
     = Width Dimension
     | Height Dimension
+    | IncrementWidth
+    | IncrementHeight
     -- | Color ...
 
 update : Msg -> Model -> Model
@@ -65,6 +67,15 @@ update msg model =
             |> asHeightIn model.dimensions
             |> asDimensionsIn model
 
+    IncrementWidth ->
+        model.dimensions.width + 1
+            |> asWidthIn model.dimensions
+            |> asDimensionsIn model
+
+    IncrementHeight ->
+        model.dimensions.height + 1
+            |> asHeightIn model.dimensions
+            |> asDimensionsIn model
     -- Color ... ->
 
 
@@ -72,13 +83,15 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-  div []
-    [ div [ css [ tileDimensions model.dimensions
-                , tileColor
-                ]
-          ]
-          []
-    ]
+  div [] [ tile model, increaseWidthButton model ]
+
+tile : Model -> Html Msg
+tile model =
+    div [ css [ tileDimensions model.dimensions
+              , tileColor
+              ]
+        ]
+        []
 
 tileDimensions : Dimensions -> Style
 tileDimensions dimensions =
@@ -89,6 +102,12 @@ tileDimensions dimensions =
 tileColor : Style
 tileColor =
     Css.backgroundColor (Css.hex "60c71c")
+
+
+increaseWidthButton : Model -> Html Msg
+increaseWidthButton model =
+    button [ onClick IncrementWidth ] [ text "Increase Width" ]
+
 
 
 -- HELPERS
