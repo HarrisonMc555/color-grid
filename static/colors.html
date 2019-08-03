@@ -10,7 +10,15 @@
 
     <!-- <link rel="stylesheet" href="css/styles.css"> -->
     <style>
-     div {width: 100px; height: 100px; padding: 10px}
+     div.grid {
+       display: inline-grid;
+       grid-template-columns: auto auto;
+     }
+
+     div.tile {
+       width: 100px;
+       height: 100px;
+     }
     </style>
 
   </head>
@@ -18,8 +26,13 @@
   <body>
     <h1>Color Grid</h1>
 
-    <div style="background-color: #60c71c;"></div>
-    <div style="background-color: #3d46bf;"></div>
+    <div class="grid">
+      <div class="tile" style="background-color: #777777;"></div>
+      <div class="tile" style="background-color: #0000ff;"></div>
+      <!-- <br> -->
+      <div class="tile" style="background-color: #00ff00;"></div>
+      <div class="tile" style="background-color: #ff0000;"></div>
+    </div>
     <input type="color" value="#e66465">
 
   </body>
