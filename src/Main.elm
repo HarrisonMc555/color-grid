@@ -89,16 +89,29 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-  div [] ( [ selectColorButton model
+    div [] [ selectColorButton model
            , rowText model
            , addRowButton
            , columnText model
            , addColumnButton
-           ] ++ grid model
-         )
+           , grid model
+           ]
 
-grid : Model -> List (Html Msg)
+grid : Model -> Html Msg
 grid model =
+    let numColumns = model.gridDimensions.numColumns
+    in div [ css [ Css.property "display" "grid"
+                 , Css.property "grid-template-columns"
+                     (String.join " " (List.repeat numColumns "auto"))
+                 , Css.before [ Css.property "content" ""
+                              , Css.display Css.block
+                              , Css.paddingBottom (Css.pct 130)
+                              ]
+                 ]
+           ] (tiles model)
+
+tiles : Model -> List (Html Msg)
+tiles model =
     let tile = div [ css [ tileSize model.tileSize
                          , tileColor model.color
                          ]
