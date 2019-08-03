@@ -23,25 +23,25 @@ main =
 type alias Model =
     -- { colors : Array2D Color
     { color : Color
-    , dimensions : Dimensions
+    , tileSize : Size
     }
 
-type alias Dimensions =
-    { width : Dimension
-    , height : Dimension
+type alias Size =
+    { width : Length
+    , height : Length
     }
 
-type alias Dimension = Float
+type alias Length = Float
 
 init : Model
 init =
     -- { colors = Array2D.empty
     { color = Css.hex "60c71c"
-    , dimensions = initDimensions
+    , tileSize = initTileSize
     }
 
-initDimensions : Dimensions
-initDimensions =
+initTileSize : Size
+initTileSize =
     { width = 100
     , height = 100
     }
@@ -50,35 +50,11 @@ initDimensions =
 -- UPDATE
 
 type Msg
-    = Width Dimension
-    | Height Dimension
-    | IncrementWidth
-    | IncrementHeight
-    | NewColor Color
+    = NewColor Color
 
 update : Msg -> Model -> Model
 update msg model =
   case msg of
-    Width width ->
-        width
-            |> asWidthIn model.dimensions
-            |> asDimensionsIn model
-
-    Height height ->
-        height
-            |> asHeightIn model.dimensions
-            |> asDimensionsIn model
-
-    IncrementWidth ->
-        model.dimensions.width + 1
-            |> asWidthIn model.dimensions
-            |> asDimensionsIn model
-
-    IncrementHeight ->
-        model.dimensions.height + 1
-            |> asHeightIn model.dimensions
-            |> asDimensionsIn model
-
     NewColor color ->
         color
             |> asColorIn model
@@ -89,32 +65,27 @@ update msg model =
 view : Model -> Html Msg
 view model =
   div [] [ tile model
-         , increaseWidthButton model
          , selectColorButton model
          ]
 
 tile : Model -> Html Msg
 tile model =
-    div [ css [ tileDimensions model.dimensions
+    div [ css [ tileSize model.tileSize
               , tileColor model.color
               ]
         ]
         []
 
-tileDimensions : Dimensions -> Style
-tileDimensions dimensions =
-    Css.batch [ Css.width (Css.px dimensions.width)
-              , Css.height (Css.px dimensions.height)
+tileSize : Size -> Style
+tileSize size =
+    Css.batch [ Css.width (Css.px size.width)
+              , Css.height (Css.px size.height)
               ]
 
 tileColor : Color -> Style
 tileColor color =
     Css.backgroundColor color
 
-
-increaseWidthButton : Model -> Html Msg
-increaseWidthButton model =
-    button [ onClick IncrementWidth ] [ text "Increase Width" ]
 
 selectColorButton : Model -> Html Msg
 selectColorButton model =
@@ -131,29 +102,29 @@ colorMsg string =
 
 -- HELPERS
 
-setWidth : Dimension -> Dimensions -> Dimensions
-setWidth width dimension =
-    { dimension | width = width }
+setWidth : Length -> Size -> Size
+setWidth width length =
+    { length | width = width }
 
-setHeight : Dimension -> Dimensions -> Dimensions
-setHeight height dimension =
-    { dimension | height = height }
+setHeight : Length -> Size -> Size
+setHeight height length =
+    { length | height = height }
 
-asWidthIn : Dimensions -> Dimension -> Dimensions
+asWidthIn : Size -> Length -> Size
 asWidthIn =
     flip setWidth
 
-asHeightIn : Dimensions -> Dimension -> Dimensions
+asHeightIn : Size -> Length -> Size
 asHeightIn =
     flip setHeight
 
-setDimensions : Dimensions -> Model -> Model
-setDimensions dimensions model =
-    { model | dimensions = dimensions }
+setSize : Size -> Model -> Model
+setSize size model =
+    { model | tileSize = size }
 
-asDimensionsIn : Model -> Dimensions -> Model
-asDimensionsIn =
-    flip setDimensions
+asSizeIn : Model -> Size -> Model
+asSizeIn =
+    flip setSize
 
 setColor : Color -> Model -> Model
 setColor color model =
