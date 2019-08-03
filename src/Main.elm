@@ -5,14 +5,16 @@
 --
 
 import Browser
-import Html exposing (Html, button, div, text, br)
-import Html.Events exposing (onClick)
+import Html.Styled exposing (Html, button, div, text, br, toUnstyled)
+import Html.Styled.Events exposing (onClick)
+import Html.Styled.Attributes exposing (css)
 import Color exposing (Color)
 import Array2D exposing (Array2D)
+import Css
 
 
 main =
-  Browser.sandbox { init = init, update = update, view = view }
+  Browser.sandbox { init = init, update = update, view = view >> toUnstyled }
 
 
 -- MODEL
@@ -55,6 +57,12 @@ view model =
     , button [ onClick Increment ] [ text "+" ]
     , br [] []
     , button [ onClick Reset ] [ text "reset" ]
-    , div [ "style" "background-color: #60c71c; width: 100px; height: 100px;" ] []
-    , div [ "style" "width: 100px; height: 100px;" ] []
+    , div [ divCss ] []
     ]
+
+divCss : Html.Styled.Attribute msg
+divCss =
+    css [ Css.backgroundColor (Css.hex "60c71c")
+        , Css.width (Css.px 100)
+        , Css.height (Css.px 100)
+        ]
