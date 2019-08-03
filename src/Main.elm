@@ -108,7 +108,6 @@ grid model =
                    model.gridDimensions.numColumns
     in List.repeat numTiles tile
 
-
 tileSize : Size -> Style
 tileSize size =
     Css.batch [ Css.width (Css.px size.width)
@@ -118,7 +117,6 @@ tileSize size =
 tileColor : Color -> Style
 tileColor color =
     Css.backgroundColor color
-
 
 selectColorButton : Model -> Html Msg
 selectColorButton model =
@@ -147,7 +145,6 @@ columnText model =
 addColumnButton : Html Msg
 addColumnButton =
     button [ onClick AddColumn ] [ text "Add column" ]
-
 
 
 -- HELPERS
