@@ -7,6 +7,8 @@
 import Browser
 import Html exposing (Html, button, div, text, br)
 import Html.Events exposing (onClick)
+import Color exposing (Color)
+import Array2D exposing (Array2D)
 
 
 main =
@@ -16,6 +18,10 @@ main =
 -- MODEL
 
 type alias Model = Int
+type alias ColorModel =
+    {
+        colors : Array2D Color
+    }
 
 init : Model
 init =
@@ -49,4 +55,6 @@ view model =
     , button [ onClick Increment ] [ text "+" ]
     , br [] []
     , button [ onClick Reset ] [ text "reset" ]
+    , div [ "style" "background-color: #60c71c; width: 100px; height: 100px;" ] []
+    , div [ "style" "width: 100px; height: 100px;" ] []
     ]
