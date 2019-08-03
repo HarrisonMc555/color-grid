@@ -23,7 +23,13 @@ main =
 type alias Model =
     -- { colors : Array2D Color
     { color : Color
+    , gridDimensions : Dimensions
     , tileSize : Size
+    }
+
+type alias Dimensions =
+    { numRows : Int
+    , numColumns : Int
     }
 
 type alias Size =
@@ -37,7 +43,14 @@ init : Model
 init =
     -- { colors = Array2D.empty
     { color = Css.hex "60c71c"
+    , gridDimensions = initGridDimensions
     , tileSize = initTileSize
+    }
+
+initGridDimensions : Dimensions
+initGridDimensions =
+    { numRows = 1
+    , numColumns = 1
     }
 
 initTileSize : Size
