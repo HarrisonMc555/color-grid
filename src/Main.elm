@@ -75,12 +75,12 @@ update msg model =
               |> asColorIn model
 
       AddRow ->
-          model.gridDimensions.numRows
+          model.gridDimensions.numRows + 1
               |> asNumRowsIn model.gridDimensions
               |> asGridDimensionsIn model
 
       AddColumn ->
-          model.gridDimensions.numColumns
+          model.gridDimensions.numColumns + 1
               |> asNumColumnsIn model.gridDimensions
               |> asGridDimensionsIn model
 
@@ -91,6 +91,8 @@ view : Model -> Html Msg
 view model =
   div [] [ tile model
          , selectColorButton model
+         , rowText model
+         , addRowButton
          ]
 
 tile : Model -> Html Msg
@@ -123,6 +125,15 @@ selectColorButton model =
 colorMsg : String -> Msg
 colorMsg string =
     NewColor (Css.hex string)
+
+rowText : Model -> Html Msg
+rowText model =
+    text (String.fromInt model.gridDimensions.numRows)
+
+addRowButton : Html Msg
+addRowButton =
+    button [ onClick AddRow ] [ text "Add row" ]
+
 
 
 -- HELPERS
