@@ -1,9 +1,3 @@
--- Press buttons to increment and decrement a counter.
---
--- Read how it works:
---   https://guide.elm-lang.org/architecture/buttons.html
---
-
 import Browser
 import Html.Styled exposing (..)
 import Html.Styled.Events exposing (onClick, onInput)
@@ -123,6 +117,7 @@ grid array format =
 colorGrid : Model -> Html Msg
 colorGrid model =
     grid model.colors (tile model)
+
 tile : Model -> Color -> Html Msg
 tile model color =
     div [ css [ tileSize model.tileSize
