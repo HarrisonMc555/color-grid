@@ -12,6 +12,7 @@ import Array2D exposing (Array2D)
 import Css
 import Css exposing (Style, Color)
 import Hex
+import List.Extra
 
 
 main =
@@ -21,8 +22,7 @@ main =
 -- MODEL
 
 type alias Model =
-    -- { colors : Array2D Color
-    { color : Color
+    { colors : Array2D Color
     , gridDimensions : Dimensions
     , tileSize : Size
     }
@@ -41,8 +41,14 @@ type alias Length = Float
 
 init : Model
 init =
-    -- { colors = Array2D.empty
-    { color = Css.hex "60c71c"
+    { colors = Array2D.fromList
+          [ [ Css.hex "777777"
+            , Css.hex "0000ff"
+            ]
+          , [ Css.hex "00ff00"
+            , Css.hex "ff0000"
+            ]
+          ]
     , gridDimensions = initGridDimensions
     , tileSize = initTileSize
     }
@@ -71,8 +77,9 @@ update : Msg -> Model -> Model
 update msg model =
   case msg of
       NewColor color ->
-          color
-              |> asColorIn model
+          model
+          -- color
+          --     |> asColorIn model
 
       AddRow ->
           model.gridDimensions.numRows + 1
@@ -89,39 +96,39 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    div [] [ selectColorButton model
-           , rowText model
-           , addRowButton
-           , columnText model
-           , addColumnButton
-           , grid model
-           , cssLink "normalize.css"
-           , cssLink "skeleton.css"
-           ]
-
-grid : Model -> Html Msg
-grid model =
-    let numColumns = model.gridDimensions.numColumns
-    in div [ css [ Css.property "display" "grid"
-                 , Css.property "grid-template-columns"
-                     (String.join " " (List.repeat numColumns "auto"))
-                 , Css.before [ Css.property "content" ""
-                              , Css.display Css.block
-                              , Css.paddingBottom (Css.pct 130)
-                              ]
-                 ]
-           ] (tiles model)
-
-tiles : Model -> List (Html Msg)
-tiles model =
-    let tile = div [ css [ tileSize model.tileSize
-                         , tileColor model.color
-                         ]
+    let elements = selectColorButtons model ++
+                   [ rowText model
+                   , addRowButton
+                   , columnText model
+                   , addColumnButton
+                   , colorGrid model
+                   , cssLink "normalize.css"
+                   , cssLink "skeleton.css"
                    ]
-               []
-        numTiles = model.gridDimensions.numRows *
-                   model.gridDimensions.numColumns
-    in List.repeat numTiles tile
+    in div [] elements
+
+grid : Array2D elem -> (elem -> Html Msg) -> Html Msg
+grid array format =
+    div [ css [ Css.property "display" "grid"
+              , Css.property "grid-template-columns"
+                  (String.join " "
+                       (List.repeat (Array2D.columns array) "auto"))
+              , Css.before [ Css.property "content" ""
+                           , Css.display Css.block
+                           , Css.paddingBottom (Css.pct 130)
+                           ]
+              ]
+        ] (List.map format (flatten array))
+
+colorGrid : Model -> Html Msg
+colorGrid model =
+    grid model.colors (tile model)
+tile : Model -> Color -> Html Msg
+tile model color =
+    div [ css [ tileSize model.tileSize
+              , tileColor color
+              ]
+        ] []
 
 tileSize : Size -> Style
 tileSize size =
@@ -133,13 +140,18 @@ tileColor : Color -> Style
 tileColor color =
     Css.backgroundColor color
 
+selectColorButtons : Model -> List (Html Msg)
+selectColorButtons model =
+    List.repeat (numTiles model) (selectColorButton model)
+
 selectColorButton : Model -> Html Msg
 selectColorButton model =
-    input [ type_ "color"
-          , value (fromColor model.color)
-          , onInput colorMsg
-          ]
-        []
+    let firstColor = Array2D.get 0 0 model.colors
+        color = Maybe.withDefault (Css.hex "000000") firstColor
+    in input [ type_ "color"
+             , value (fromColor color)
+             , onInput colorMsg
+             ] []
 
 colorMsg : String -> Msg
 colorMsg string =
@@ -165,7 +177,13 @@ cssLink : String -> Html Msg
 cssLink filename =
     node "link" [ rel "stylesheet", href ("../static/css/" ++ filename) ] []
 
+
 -- HELPERS
+
+numTiles : Model -> Int
+numTiles model =
+    let d = model.gridDimensions
+    in d.numRows * d.numColumns
 
 setWidth : Length -> Size -> Size
 setWidth width length =
@@ -191,13 +209,13 @@ asSizeIn : Model -> Size -> Model
 asSizeIn =
     flip setSize
 
-setColor : Color -> Model -> Model
-setColor color model =
-    { model | color = color }
+-- setColor : Color -> Model -> Model
+-- setColor color model =
+--     { model | color = color }
 
-asColorIn : Model -> Color -> Model
-asColorIn =
-    flip setColor
+-- asColorIn : Model -> Color -> Model
+-- asColorIn =
+--     flip setColor
 
 setNumRows : Int -> Dimensions -> Dimensions
 setNumRows numRows dimensions
@@ -239,3 +257,18 @@ fromColor color =
 hexStr : Int -> String
 hexStr number =
     String.pad 2 '0' (Hex.toString number)
+
+flatten : Array2D item -> List item
+flatten array =
+    let rows = List.range 0 (Array2D.rows array - 1)
+        columns = List.range 0 (Array2D.columns array - 1)
+        indices = cartesian rows columns
+        get (i, j) = Array2D.get i j array
+    in List.filterMap get indices
+
+cartesian : List a -> List b -> List (a, b)
+cartesian xs ys =
+  List.Extra.lift2 tuple xs ys
+
+tuple : a -> b -> (a, b)
+tuple a b = (a, b)
