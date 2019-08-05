@@ -138,7 +138,7 @@ selectColorButtons model =
 
 selectColorButton : Model -> Int -> Int -> Html Msg
 selectColorButton model row column =
-    let firstColor = Array2D.get 0 0 model.colors
+    let firstColor = Array2D.get row column model.colors
         color = Maybe.withDefault (Css.hex "000000") firstColor
     in input [ type_ "color"
              , value (fromColor color)
