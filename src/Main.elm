@@ -7,6 +7,7 @@ import Css
 import Css exposing (Style, Color)
 import Hex
 import List.Extra
+import Array
 
 
 main =
@@ -76,15 +77,16 @@ update msg model =
           --     |> asColorIn model
 
       AddRow ->
-          model.gridDimensions.numRows + 1
-              |> asNumRowsIn model.gridDimensions
-              |> asGridDimensionsIn model
+          Array2D.appendRow Array.empty defaultColor model.colors
+              |> asColorsIn model
 
       AddColumn ->
-          model.gridDimensions.numColumns + 1
-              |> asNumColumnsIn model.gridDimensions
-              |> asGridDimensionsIn model
+          Array2D.appendColumn Array.empty defaultColor model.colors
+              |> asColorsIn model
 
+defaultColor : Color
+defaultColor =
+    Css.hex "000000"
 
 -- VIEW
 
@@ -206,13 +208,13 @@ asSizeIn : Model -> Size -> Model
 asSizeIn =
     flip setSize
 
--- setColor : Color -> Model -> Model
--- setColor color model =
---     { model | color = color }
+setColors : Array2D Color -> Model -> Model
+setColors colors model =
+    { model | colors = colors }
 
--- asColorIn : Model -> Color -> Model
--- asColorIn =
---     flip setColor
+asColorsIn : Model -> Array2D Color -> Model
+asColorsIn =
+    flip setColors
 
 setNumRows : Int -> Dimensions -> Dimensions
 setNumRows numRows dimensions
