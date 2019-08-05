@@ -18,7 +18,6 @@ main =
 
 type alias Model =
     { colors : Array2D Color
-    , gridDimensions : Dimensions
     , tileSize : Size
     }
 
@@ -44,14 +43,7 @@ init =
             , Css.hex "ff0000"
             ]
           ]
-    , gridDimensions = initGridDimensions
     , tileSize = initTileSize
-    }
-
-initGridDimensions : Dimensions
-initGridDimensions =
-    { numRows = 1
-    , numColumns = 1
     }
 
 initTileSize : Size
@@ -158,7 +150,10 @@ colorMsg string =
 
 rowText : Model -> Html Msg
 rowText model =
-    text (String.fromInt model.gridDimensions.numRows)
+    model.colors
+        |> Array2D.rows
+        |> String.fromInt
+        |> text
 
 addRowButton : Html Msg
 addRowButton =
@@ -166,7 +161,10 @@ addRowButton =
 
 columnText : Model -> Html Msg
 columnText model =
-    text (String.fromInt model.gridDimensions.numColumns)
+    model.colors
+        |> Array2D.columns
+        |> String.fromInt
+        |> text
 
 addColumnButton : Html Msg
 addColumnButton =
@@ -181,8 +179,7 @@ cssLink filename =
 
 numTiles : Model -> Int
 numTiles model =
-    let d = model.gridDimensions
-    in d.numRows * d.numColumns
+    Array2D.rows model.colors * Array2D.columns model.colors
 
 setWidth : Length -> Size -> Size
 setWidth width length =
@@ -231,14 +228,6 @@ setNumColumns numColumns dimensions
 asNumColumnsIn : Dimensions -> Int -> Dimensions
 asNumColumnsIn =
     flip setNumColumns
-
-setGridDimensions : Dimensions -> Model -> Model
-setGridDimensions dimensions model =
-    { model | gridDimensions = dimensions }
-
-asGridDimensionsIn : Model -> Dimensions -> Model
-asGridDimensionsIn =
-    flip setGridDimensions
 
 flip : (a -> b -> c) -> b -> a -> c
 flip f a b =
