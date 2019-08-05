@@ -56,17 +56,16 @@ initTileSize =
 -- UPDATE
 
 type Msg
-    = NewColor Color
+    = NewColor Int Int Color
     | AddRow
     | AddColumn
 
 update : Msg -> Model -> Model
 update msg model =
   case msg of
-      NewColor color ->
-          model
-          -- color
-          --     |> asColorIn model
+      NewColor row column color ->
+          Array2D.set row column color model.colors
+              |> asColorsIn model
 
       AddRow ->
           Array2D.appendRow Array.empty defaultColor model.colors
@@ -133,20 +132,22 @@ tileColor color =
 
 selectColorButtons : Model -> List (Html Msg)
 selectColorButtons model =
-    List.repeat (numTiles model) (selectColorButton model)
+    let colorButtonFromIndices = uncurry (selectColorButton model)
+        colorIndices = indices model.colors
+    in List.map colorButtonFromIndices colorIndices
 
-selectColorButton : Model -> Html Msg
-selectColorButton model =
+selectColorButton : Model -> Int -> Int -> Html Msg
+selectColorButton model row column =
     let firstColor = Array2D.get 0 0 model.colors
         color = Maybe.withDefault (Css.hex "000000") firstColor
     in input [ type_ "color"
              , value (fromColor color)
-             , onInput colorMsg
+             , onInput (colorMsg row column)
              ] []
 
-colorMsg : String -> Msg
-colorMsg string =
-    NewColor (Css.hex string)
+colorMsg : Int -> Int -> String -> Msg
+colorMsg row column string =
+    NewColor row column (Css.hex string)
 
 rowText : Model -> Html Msg
 rowText model =
@@ -250,11 +251,8 @@ hexStr number =
 
 flatten : Array2D item -> List item
 flatten array =
-    let rows = List.range 0 (Array2D.rows array - 1)
-        columns = List.range 0 (Array2D.columns array - 1)
-        indices = cartesian rows columns
-        get (i, j) = Array2D.get i j array
-    in List.filterMap get indices
+    let get (i, j) = Array2D.get i j array
+    in List.filterMap get (indices array)
 
 cartesian : List a -> List b -> List (a, b)
 cartesian xs ys =
@@ -262,3 +260,14 @@ cartesian xs ys =
 
 tuple : a -> b -> (a, b)
 tuple a b = (a, b)
+
+uncurry : (a -> b -> c) -> (a, b) -> c
+uncurry f (a, b) =
+    f a b
+
+indices : Array2D elem_ -> List (Int, Int)
+indices array =
+    let rows = List.range 0 (Array2D.rows array - 1)
+        columns = List.range 0 (Array2D.columns array - 1)
+    in cartesian rows columns
+    
