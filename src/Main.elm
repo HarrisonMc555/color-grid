@@ -103,16 +103,18 @@ view model =
 
 grid : Array2D elem -> (elem -> Html Msg) -> Html Msg
 grid array format =
-    div [ css [ Css.property "display" "grid"
-              , Css.property "grid-template-columns"
-                  (String.join " "
-                       (List.repeat (Array2D.columns array) "auto"))
-              , Css.before [ Css.property "content" ""
-                           , Css.display Css.block
-                           , Css.paddingBottom (Css.pct 130)
-                           ]
-              ]
-        ] (List.map format (flatten array))
+    let autos = "auto"
+                  |> List.repeat (Array2D.columns array)
+                  |> String.join " "
+        elements = array |> flatten |> List.map format
+    in div [ css [ Css.property "display" "grid"
+                 , Css.property "grid-template-columns" autos
+                 , Css.before [ Css.property "content" ""
+                              , Css.display Css.block
+                              , Css.paddingBottom (Css.pct 130)
+                              ]
+                 ]
+           ] elements
 
 colorGrid : Model -> Html Msg
 colorGrid model =
@@ -247,7 +249,9 @@ fromColor color =
             , color.green
             , color.blue
             ]
-    in "#" ++ String.concat (List.map hexStr numbers)
+        numberStrings =
+            List.map hexStr numbers |> String.concat
+    in "#" ++ numberStrings
 
 hexStr : Int -> String
 hexStr number =
