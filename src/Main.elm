@@ -83,8 +83,8 @@ defaultColor =
 
 view : Model -> Html Msg
 view model =
-    let elements = selectColorButtons model ++
-                   [ rowText model
+    let elements = [ selectColorButtonsGrid model
+                   , rowText model
                    , addRowButton
                    , columnText model
                    , addColumnButton
@@ -94,12 +94,12 @@ view model =
                    ]
     in div [] elements
 
-grid : Array2D elem -> (elem -> Html Msg) -> Html Msg
+grid : Array2D elem -> (Int -> Int -> elem -> Html Msg) -> Html Msg
 grid array format =
     let autos = "auto"
                   |> List.repeat (Array2D.columns array)
                   |> String.join " "
-        elements = array |> flatten |> List.map format
+        elements = Array2D.indexedMap format array |> flatten
     in div [ css [ Css.property "display" "grid"
                  , Css.property "grid-template-columns" autos
                  , Css.before [ Css.property "content" ""
@@ -111,7 +111,8 @@ grid array format =
 
 colorGrid : Model -> Html Msg
 colorGrid model =
-    grid model.colors (tile model)
+    let format row column color = tile model color
+    in grid model.colors format
 
 tile : Model -> Color -> Html Msg
 tile model color =
@@ -130,11 +131,10 @@ tileColor : Color -> Style
 tileColor color =
     Css.backgroundColor color
 
-selectColorButtons : Model -> List (Html Msg)
-selectColorButtons model =
-    let colorButtonFromIndices = uncurry (selectColorButton model)
-        colorIndices = indices model.colors
-    in List.map colorButtonFromIndices colorIndices
+selectColorButtonsGrid : Model -> Html Msg
+selectColorButtonsGrid model =
+    let format row column color = selectColorButton model row column
+    in grid model.colors format
 
 selectColorButton : Model -> Int -> Int -> Html Msg
 selectColorButton model row column =
