@@ -1,3 +1,5 @@
+module Main exposing (main)
+
 import Browser
 import Html.Styled exposing (..)
 import Html.Styled.Events exposing (onClick, onInput)
