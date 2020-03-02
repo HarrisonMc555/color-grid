@@ -104,6 +104,7 @@ view model =
                    , colorGrid model
                    , cssLink "normalize.css"
                    , cssLink "skeleton.css"
+                   , cssLink "custom.css"
                    ]
     in div [] elements
 
