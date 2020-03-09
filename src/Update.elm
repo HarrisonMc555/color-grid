@@ -1,16 +1,9 @@
-module Update exposing (..)
+module Update exposing (Msg(..), update)
 
 import Array
-import Array2D exposing (Array2D)
-import Browser
-import Css exposing (Color, Style)
-import Hex
-import Html.Styled exposing (..)
-import Html.Styled.Attributes exposing (..)
-import Html.Styled.Events exposing (onClick, onInput)
-import List.Extra
-import Model exposing (..)
-import Util exposing (..)
+import Array2D
+import Css exposing (Color)
+import Model exposing (Model, asColorsIn)
 
 
 type Msg
