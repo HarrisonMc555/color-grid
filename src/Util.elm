@@ -1,15 +1,18 @@
 module Util exposing
-    ( cartesian
+    ( array2dToList
+    , arrayFlatMap
+    , arrayWindows2
+    , cartesian
     , flatten
     , flip
     , fromColor
     , hexStr
-    , indices
     , tuple
     , uncurry
     , windows2
     )
 
+import Array exposing (Array)
 import Array2D exposing (Array2D)
 import Css exposing (Color)
 import Hex
@@ -47,7 +50,7 @@ flatten array =
         get ( i, j ) =
             Array2D.get i j array
     in
-    List.filterMap get (indices array)
+    List.filterMap get (array2DIndices array)
 
 
 cartesian : List a -> List b -> List ( a, b )
@@ -65,8 +68,8 @@ uncurry f ( a, b ) =
     f a b
 
 
-indices : Array2D elem_ -> List ( Int, Int )
-indices array =
+array2DIndices : Array2D elem_ -> List ( Int, Int )
+array2DIndices array =
     let
         rows =
             List.range 0 (Array2D.rows array - 1)
@@ -85,3 +88,41 @@ windows2 l =
 
         _ ->
             []
+
+
+arrayWindows2 : Array a -> Array ( a, a )
+arrayWindows2 array =
+    let
+        indices =
+            List.range 0 (Array.length array - 1)
+
+        getPair index =
+            case ( Array.get index array, Array.get (index + 1) array ) of
+                ( Just a, Just b ) ->
+                    Just ( a, b )
+
+                _ ->
+                    Nothing
+    in
+    List.filterMap getPair indices |> Array.fromList
+
+
+array2dToList : Array2D a -> List (List a)
+array2dToList array2d =
+    let
+        rowIndices =
+            List.range 0 (Array2D.rows array2d - 1)
+
+        getRow index =
+            Array2D.getRow index array2d |> Maybe.map Array.toList
+    in
+    List.filterMap getRow rowIndices
+
+
+arrayFlatMap : Array a -> (a -> Array b) -> Array b
+arrayFlatMap array f =
+    let
+        acc x xs =
+            Array.append xs <| f x
+    in
+    Array.foldl acc Array.empty array

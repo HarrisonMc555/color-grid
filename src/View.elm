@@ -5,6 +5,7 @@ import Css exposing (Color, Style)
 import Html.Styled exposing (Html, br, button, div, input, node, text)
 import Html.Styled.Attributes exposing (css, href, rel, type_, value)
 import Html.Styled.Events exposing (onClick, onInput)
+import Logic
 import Model exposing (Model, Size)
 import Update exposing (Msg(..))
 import Util
@@ -62,12 +63,7 @@ colorGrid model =
         format row column color =
             tile model color
     in
-    grid (interpolatedColorGrid model.colors model.numInBetweenRows model.numInBetweenColumns) format
-
-
-interpolatedColorGrid : Array2D Color -> Int -> Int -> Array2D Color
-interpolatedColorGrid pinnedColors numInBetweenRows numInBetweenColumns =
-    pinnedColors
+    grid (Logic.interpolateColorGrid model.colors model.numInBetweenRows model.numInBetweenColumns) format
 
 
 tile : Model -> Color -> Html Msg
