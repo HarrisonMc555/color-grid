@@ -1,8 +1,18 @@
-module Model exposing (..)
+module Model exposing
+    ( Model
+    , Size
+    , asColorsIn
+    , asHeightIn
+    , asNumColumnsIn
+    , asNumRowsIn
+    , asSizeIn
+    , asWidthIn
+    , numTiles
+    )
 
 import Array2D exposing (Array2D)
 import Css exposing (Color)
-import Util exposing (..)
+import Util
 
 
 type alias Model =
