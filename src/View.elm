@@ -1,17 +1,13 @@
-module View exposing (..)
+module View exposing (view)
 
-import Array
 import Array2D exposing (Array2D)
-import Browser
 import Css exposing (Color, Style)
-import Hex
-import Html.Styled exposing (..)
-import Html.Styled.Attributes exposing (..)
+import Html.Styled exposing (Html, br, button, div, input, node, text)
+import Html.Styled.Attributes exposing (css, href, rel, type_, value)
 import Html.Styled.Events exposing (onClick, onInput)
-import List.Extra
-import Model exposing (..)
-import Update exposing (..)
-import Util exposing (..)
+import Model exposing (Model, Size)
+import Update exposing (Msg(..))
+import Util
 
 
 view : Model -> Html Msg
@@ -44,7 +40,7 @@ grid array format =
                 |> String.join " "
 
         elements =
-            Array2D.indexedMap format array |> flatten
+            Array2D.indexedMap format array |> Util.flatten
     in
     div
         [ css
@@ -71,10 +67,6 @@ colorGrid model =
 
 interpolatedColorGrid : Array2D Color -> Int -> Int -> Array2D Color
 interpolatedColorGrid pinnedColors numInBetweenRows numInBetweenColumns =
-    let
-        x =
-            3
-    in
     pinnedColors
 
 
@@ -122,7 +114,7 @@ selectColorButton model row column =
     in
     input
         [ type_ "color"
-        , value (fromColor color)
+        , value (Util.fromColor color)
         , onInput (colorMsg row column)
         ]
         []
