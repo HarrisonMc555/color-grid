@@ -3,15 +3,17 @@ module Model exposing
     , Size
     , asColorsIn
     , asHeightIn
+    , asMessageIn
     , asNumColumnsIn
     , asNumRowsIn
     , asSizeIn
     , asWidthIn
     , numTiles
+    , setMessage
     )
 
 import Array2D exposing (Array2D)
-import Css exposing (Color)
+import Color exposing (Color)
 import Util
 
 
@@ -20,6 +22,7 @@ type alias Model =
     , numInBetweenRows : Int
     , numInBetweenColumns : Int
     , tileSize : Size
+    , message : String
     }
 
 
@@ -37,6 +40,16 @@ type alias Size =
 
 type alias Length =
     Float
+
+
+setMessage : String -> Model -> Model
+setMessage message model =
+    { model | message = message }
+
+
+asMessageIn : Model -> String -> Model
+asMessageIn =
+    Util.flip setMessage
 
 
 numTiles : Model -> Int

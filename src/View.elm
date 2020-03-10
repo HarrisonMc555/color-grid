@@ -1,7 +1,8 @@
 module View exposing (view)
 
 import Array2D exposing (Array2D)
-import Css exposing (Color, Style)
+import Color exposing (Color)
+import Css exposing (Style)
 import Html.Styled exposing (Html, br, button, div, input, node, text)
 import Html.Styled.Attributes exposing (css, href, rel, type_, value)
 import Html.Styled.Events exposing (onClick, onInput)
@@ -15,7 +16,9 @@ view : Model -> Html Msg
 view model =
     let
         elements =
-            [ rowText model
+            [ text <| "Message: \"" ++ model.message ++ "\""
+            , br [] []
+            , rowText model
             , addRowButton
             , removeRowButton
             , br [] []
@@ -87,13 +90,13 @@ tileSize size =
 
 tileColor : Color -> Style
 tileColor color =
-    Css.backgroundColor color
+    Css.backgroundColor <| Util.cssColorFromColor color
 
 
 selectColorButtonsGrid : Model -> Html Msg
 selectColorButtonsGrid model =
     let
-        format row column color =
+        format row column _ =
             selectColorButton model row column
     in
     grid model.colors format
@@ -106,19 +109,21 @@ selectColorButton model row column =
             Array2D.get row column model.colors
 
         color =
-            Maybe.withDefault (Css.hex "000000") firstColor
+            Maybe.withDefault Color.black firstColor
     in
     input
         [ type_ "color"
-        , value (Util.fromColor color)
-        , onInput (colorMsg row column)
+        , value <| Util.hexStringFromColor color
+        , onInput <| colorMsg row column
         ]
         []
 
 
 colorMsg : Int -> Int -> String -> Msg
 colorMsg row column string =
-    NewColor row column (Css.hex string)
+    Css.hex string
+        |> Util.colorFromCssColor
+        |> NewColor row column
 
 
 rowText : Model -> Html Msg

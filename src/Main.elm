@@ -2,7 +2,7 @@ module Main exposing (main)
 
 import Array2D exposing (Array2D)
 import Browser
-import Css exposing (Color)
+import Color exposing (Color)
 import Html.Styled exposing (toUnstyled)
 import Model exposing (Model, Size)
 import Update exposing (Msg, update)
@@ -20,6 +20,7 @@ init =
     , numInBetweenRows = 2
     , numInBetweenColumns = 3
     , tileSize = initTileSize
+    , message = ""
     }
 
 
@@ -33,10 +34,10 @@ initTileSize =
 initColors : Array2D Color
 initColors =
     Array2D.fromList
-        [ [ Css.hex "777777"
-          , Css.hex "0000ff"
+        [ [ Color.red
+          , Color.blue
           ]
-        , [ Css.hex "00ff00"
-          , Css.hex "ff0000"
+        , [ Color.green
+          , Color.yellow
           ]
         ]

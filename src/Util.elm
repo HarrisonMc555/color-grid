@@ -3,10 +3,12 @@ module Util exposing
     , arrayFlatMap
     , arrayWindows2
     , cartesian
+    , colorFromCssColor
+    , colorFromHex
+    , cssColorFromColor
     , flatten
     , flip
-    , fromColor
-    , hexStr
+    , hexStringFromColor
     , tuple
     , uncurry
     , windows2
@@ -14,7 +16,8 @@ module Util exposing
 
 import Array exposing (Array)
 import Array2D exposing (Array2D)
-import Css exposing (Color)
+import Color exposing (Color)
+import Css
 import Hex
 import List.Extra
 
@@ -24,33 +27,13 @@ flip f a b =
     f b a
 
 
-fromColor : Color -> String
-fromColor color =
-    let
-        numbers =
-            [ color.red
-            , color.green
-            , color.blue
-            ]
-
-        numberStrings =
-            List.map hexStr numbers |> String.concat
-    in
-    "#" ++ numberStrings
-
-
-hexStr : Int -> String
-hexStr number =
-    String.pad 2 '0' (Hex.toString number)
-
-
 flatten : Array2D item -> List item
 flatten array =
     let
         get ( i, j ) =
             Array2D.get i j array
     in
-    List.filterMap get (array2DIndices array)
+    List.filterMap get <| array2DIndices array
 
 
 cartesian : List a -> List b -> List ( a, b )
@@ -72,10 +55,10 @@ array2DIndices : Array2D elem_ -> List ( Int, Int )
 array2DIndices array =
     let
         rows =
-            List.range 0 (Array2D.rows array - 1)
+            List.range 0 <| Array2D.rows array - 1
 
         columns =
-            List.range 0 (Array2D.columns array - 1)
+            List.range 0 <| Array2D.columns array - 1
     in
     cartesian rows columns
 
@@ -126,3 +109,66 @@ arrayFlatMap array f =
             Array.append xs <| f x
     in
     Array.foldl acc Array.empty array
+
+
+colorFromCssColor : Css.Color -> Color
+colorFromCssColor cssColor =
+    let
+        rgbNoA =
+            Color.toRgba <| Color.rgb255 cssColor.red cssColor.green cssColor.blue
+    in
+    Color.rgba rgbNoA.red rgbNoA.green rgbNoA.blue cssColor.alpha
+
+
+colorFromHex : String -> Color
+colorFromHex hexString =
+    colorFromCssColor <| Css.hex hexString
+
+
+cssColorFromColor : Color -> Css.Color
+cssColorFromColor color =
+    let
+        rgba =
+            Color.toRgba color
+
+        red =
+            rgba.red |> colorFloatToInt
+
+        green =
+            rgba.green |> colorFloatToInt
+
+        blue =
+            rgba.blue |> colorFloatToInt
+    in
+    Css.rgba red green blue rgba.alpha
+
+
+colorFloatToInt : Float -> Int
+colorFloatToInt float =
+    floor <| float * 255.0
+
+
+hexStringFromColor : Color -> String
+hexStringFromColor color =
+    let
+        rgba =
+            Color.toRgba color
+
+        floats =
+            [ rgba.red
+            , rgba.green
+            , rgba.blue
+            ]
+
+        ints =
+            List.map colorFloatToInt floats
+
+        numberStrings =
+            List.map hexStr ints |> String.concat
+    in
+    "#" ++ numberStrings
+
+
+hexStr : Int -> String
+hexStr number =
+    String.pad 2 '0' <| Hex.toString number
