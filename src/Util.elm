@@ -1,5 +1,5 @@
 module Util exposing
-    ( array2dToList
+    ( array2DToList
     , arrayFlatMap
     , arrayWindows2
     , cartesian
@@ -8,6 +8,7 @@ module Util exposing
     , cssColorFromColor
     , flatten
     , flip
+    , fractionalRem
     , hexStringFromColor
     , tuple
     , uncurry
@@ -90,8 +91,8 @@ arrayWindows2 array =
     List.filterMap getPair indices |> Array.fromList
 
 
-array2dToList : Array2D a -> List (List a)
-array2dToList array2d =
+array2DToList : Array2D a -> List (List a)
+array2DToList array2d =
     let
         rowIndices =
             List.range 0 (Array2D.rows array2d - 1)
@@ -172,3 +173,8 @@ hexStringFromColor color =
 hexStr : Int -> String
 hexStr number =
     String.pad 2 '0' <| Hex.toString number
+
+
+fractionalRem : Float -> Float -> Float
+fractionalRem x divisor =
+    x - divisor * toFloat (floor (x / divisor))

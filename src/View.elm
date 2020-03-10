@@ -63,7 +63,7 @@ grid array format =
 colorGrid : Model -> Html Msg
 colorGrid model =
     let
-        format row column color =
+        format _ _ color =
             tile model color
     in
     grid (Logic.interpolateColorGrid model.colors model.numInBetweenRows model.numInBetweenColumns) format
